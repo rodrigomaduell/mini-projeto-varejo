@@ -60,9 +60,9 @@ print(f'\nValores únicos em CL_GENERO: {df["CL_GENERO"].unique()}')
 print(f'\nValores únicos em CL_SEG: {df["CL_SEG"].unique()}')
 
 
-print('=' * 55)
+#===========================================================================
 #SPRINT 3 - Limpeza de nulos e duplicatas
-print('=' * 55)
+#===========================================================================
 
 #Remover colunas vazias (Unnamed)
 df = df.drop(columns=[col for col in df.columns if 'Unnamed' in col])
@@ -79,11 +79,9 @@ print(f'\nDuplicatas encontradas: {df.duplicated().sum()}')
 df['PR_CAT'] = df['PR_CAT'].fillna('Sem Categoria')
 df['CL_SEG'] = df['CL_SEG'].fillna('Sem Segmento')
 
-# Investigação das duplicatas
-print('\nAmostra das duplicatas:')
-print(df[df.duplicated(keep=False)].sort_values('CO_ID').head(10).to_string())
-
 # Remover duplicatas
+# A decisão foi de remover todas colunas idênticas.
+# Ausência de ID único de transação ou coluna quantidade impede de distinguir duplicatas de compras repetidas legítimas.
 df = df.drop_duplicates().reset_index(drop=True)
 
 # Relatório após limpeza
@@ -91,3 +89,24 @@ print(f'\nNulos por coluna após limpeza: {df.isnull().sum()}')
 print(f'\nDuplicatas após limpeza: {df.duplicated().sum()}')
 print(f'\nRegistros após limpeza: {df.shape[0]}')
 
+
+#===========================================================================
+# SPRINT 4 - Estatística descritiva - coluna CL_FHL(N° de filhos)
+#===========================================================================
+
+filhos = df['CL_FHL']
+
+print('\n' + '=' * 55
+      + '\nSPRINT 4 - ESTATÍSTICA DESCRITIVA - CL_FHL (N° DE FILHOS)'
+      + '\n' + '=' * 55)
+print(f'Média: {filhos.mean():.2f}')
+print(f'Mediana: {filhos.median():.2f}')
+print(f'Desvio Padrão: {filhos.std():.2f}')
+print(f'Moda: {filhos.mode()[0]}')
+print(f'Mínimo: {filhos.min()}')
+print(f'Máximo: {filhos.max()}')
+print(f'Contagem: {filhos.count()}')
+print(f'\nQuartis:')
+print(f'  Q1 (25%): {filhos.quantile(0.25)}')
+print(f'  Q2 (50%): {filhos.quantile(0.50)}')
+print(f'  Q3 (75%): {filhos.quantile(0.75)}')
