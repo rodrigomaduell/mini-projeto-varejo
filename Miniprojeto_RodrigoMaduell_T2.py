@@ -60,3 +60,34 @@ print(f'\nValores únicos em CL_GENERO: {df["CL_GENERO"].unique()}')
 print(f'\nValores únicos em CL_SEG: {df["CL_SEG"].unique()}')
 
 
+print('=' * 55)
+#SPRINT 3 - Limpeza de nulos e duplicatas
+print('=' * 55)
+
+#Remover colunas vazias (Unnamed)
+df = df.drop(columns=[col for col in df.columns if 'Unnamed' in col])
+
+# Relatórios de nulos antes da limpeza
+print('\n' +'=' * 55)
+print('\nSPRINT 3 - LIMPEZA DE NULOS E DUPLICATAS')
+print('\n' + '=' *55)
+print(f'\nNulos por coluna antes da limpeza: {df.isnull().sum().sum()}')
+print(f'\nDuplicatas encontradas: {df.duplicated().sum()}')
+
+# Preencher categorias vazias com 'Sem Categoria'
+# A decisão foi de manter os registros e somente sinalizar a ausência de categoria.
+df['PR_CAT'] = df['PR_CAT'].fillna('Sem Categoria')
+df['CL_SEG'] = df['CL_SEG'].fillna('Sem Segmento')
+
+# Investigação das duplicatas
+print('\nAmostra das duplicatas:')
+print(df[df.duplicated(keep=False)].sort_values('CO_ID').head(10).to_string())
+
+# Remover duplicatas
+df = df.drop_duplicates().reset_index(drop=True)
+
+# Relatório após limpeza
+print(f'\nNulos por coluna após limpeza: {df.isnull().sum()}')
+print(f'\nDuplicatas após limpeza: {df.duplicated().sum()}')
+print(f'\nRegistros após limpeza: {df.shape[0]}')
+
