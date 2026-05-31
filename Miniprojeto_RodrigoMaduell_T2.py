@@ -30,6 +30,8 @@ print(f'Registros    : {df.shape[0]}')
 print(f'Colunas      : {df.shape[1]}')
 print(f'\nNomes das colunas: \n{df.columns}')
 print(f'\nTipos de dados: \n{df.dtypes}')
+print()
+print(f'Amostra dos dados: \n{df.head(5).T.to_string()}')
 # Verificação de nulos disfarçados
 print()
 strings_falsas = ['NULL', 'N/A', 'NA', 'NaN', 'none', 'None', '#N/D', '', ' ']
@@ -123,6 +125,21 @@ print(f'  Q1 (25%): {filhos.quantile(0.25)}')
 print(f'  Q2 (50%): {filhos.quantile(0.50)}')
 print(f'  Q3 (75%): {filhos.quantile(0.75)}')
 
+# Verificação de outliers em CL_FHL via IQR
+
+Q1 = filhos.quantile(0.25)
+Q3 = filhos.quantile(0.75)
+IQR = Q3 - Q1
+lim_inf = max(0, Q1 - 1.5 * IQR) # Filhos não pode ser negativo, por isso foi estabelecido o zero como limite.
+lim_sup = Q3 + 1.5 * IQR
+
+outliers_filhos = df[(df['CL_FHL'] < lim_inf) | (df['CL_FHL'] > lim_sup)]
+print(f'\nOutliers em CL_FHL:')
+print(f'  Limite inferior: {lim_inf}')
+print(f'  Limite superior: {lim_sup}')
+print(f'  Registros fora do limite: {len(outliers_filhos)}')
+print(f'  Valores únicos fora do limite: {outliers_filhos["CL_FHL"].unique()}')
+
 
 #===========================================================================
 # SPRINT 5 - Agrupamentos
@@ -156,7 +173,7 @@ print(categoria.to_string())
 #=======================================================================
 
 print('\n' + '=' * 55)
-print('\nSPRINT 6 - RELATÓRIO FINAL - PRINCIPAIS INSIGHTS')
+print('\nSPRINT 6 - RELATÓRIO FINAL - CONCLUSÕES')
 print('\n' + '=' * 55)
 print(f"""
 1. VOLUME DE DADOS:
