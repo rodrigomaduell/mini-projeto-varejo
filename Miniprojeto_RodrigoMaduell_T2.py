@@ -21,6 +21,7 @@ with open('data/Base_Varejo.csv', encoding='latin-1') as f:
     reader = csv.DictReader(f)
     dados_nativos = list(reader)
 
+
 # Diagnóstico inicial
 print('=' * 55)
 print('SPRINT 1 - DIAGNÓSTICO INICIAL')
@@ -29,7 +30,14 @@ print(f'Registros    : {df.shape[0]}')
 print(f'Colunas      : {df.shape[1]}')
 print(f'\nNomes das colunas: \n{df.columns}')
 print(f'\nTipos de dados: \n{df.dtypes}')
-
+# Verificação de nulos disfarçados
+print()
+strings_falsas = ['NULL', 'N/A', 'NA', 'NaN', 'none', 'None', '#N/D', '', ' ']
+for col in df.select_dtypes(include='string').columns:
+    for s in strings_falsas:
+        count = (df[col] == s).sum()
+        if count > 0:
+            print(f'Nulos disfarçados: Coluna {col} | valor "{s}" | ocorrências: {count}')
 
 #===========================================================================
 # SPRINT 2 - Transformação de tipos
@@ -59,7 +67,6 @@ print(f'\nAmostra da coluna DATA: \n{df["DATA"].head(3).values}')
 print(f'\nValores únicos em CL_GENERO: {df["CL_GENERO"].unique()}')
 print(f'\nValores únicos em CL_SEG: {df["CL_SEG"].unique()}')
 
-
 #===========================================================================
 #SPRINT 3 - Limpeza de nulos e duplicatas
 #===========================================================================
@@ -82,6 +89,7 @@ df['CL_SEG'] = df['CL_SEG'].fillna('Sem Segmento')
 # Substituindo '#N/D' por "Sem Categoria" 
 df['PR_CAT'] = df['PR_CAT'].replace('#N/D', 'Sem Categoria')
 df['CL_SEG'] = df['CL_SEG'].replace('#N/D', 'Sem Segmento')
+df['PR_NOME'] = df['PR_NOME'].replace('#N/D', 'Sem Nome')
 
 # Remover duplicatas
 # A decisão foi de remover todas colunas idênticas.
@@ -141,4 +149,36 @@ categoria = df.groupby('PR_CAT').agg(
 
 print('\nAgrupamento 2 - Categorias mais Vendidas:')
 print(categoria.to_string())
+
+
+#=======================================================================
+# SPRINT 6 - Relatório final e conclusões
+#=======================================================================
+
+print('\n' + '=' * 55)
+print('\nSPRINT 6 - RELATÓRIO FINAL - PRINCIPAIS INSIGHTS')
+print('\n' + '=' * 55)
+print(f"""
+1. VOLUME DE DADOS:
+      - Base original: {len(dados_nativos)} registros
+      - Base limpa: {df.shape[0]} registros
+      - Duplicatas removidas: {len(dados_nativos) - df.shape[0]}
+
+2. QUALIDADE DOS DADOS:
+        - Nulos remanescentes: {df.isnull().sum().sum()}
+        - Categorias sem nome: {(df['PR_CAT'] == 'Sem Categoria').sum()}
+
+3. PERFIL DOS CLIENTES:
+        - Moda de filhos: {filhos.mode()[0]}
+        - Mediana de filhos: {filhos.median():.2f}
+        - Média de filhos: {filhos.mean():.2f}
+
+4. COMPORTAMENTO POR GÊNERO:
+        - Compras femininas: {genero.loc[genero['CL_GENERO'] == 'F', 'total_compras'].values[0]}
+        - Compras masculinas: {genero.loc[genero['CL_GENERO'] == 'M', 'total_compras'].values[0]}
+
+5. CATEGORIA MAIS VENDIDA:
+        - Categoria líder: {categoria.loc[0, 'PR_CAT']} com {categoria.loc[0, 'total_compras']} compras
+""")
+
 
