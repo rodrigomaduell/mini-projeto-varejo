@@ -79,6 +79,10 @@ print(f'\nDuplicatas encontradas: {df.duplicated().sum()}')
 df['PR_CAT'] = df['PR_CAT'].fillna('Sem Categoria')
 df['CL_SEG'] = df['CL_SEG'].fillna('Sem Segmento')
 
+# Substituindo '#N/D' por "Sem Categoria" 
+df['PR_CAT'] = df['PR_CAT'].replace('#N/D', 'Sem Categoria')
+df['CL_SEG'] = df['CL_SEG'].replace('#N/D', 'Sem Segmento')
+
 # Remover duplicatas
 # A decisão foi de remover todas colunas idênticas.
 # Ausência de ID único de transação ou coluna quantidade impede de distinguir duplicatas de compras repetidas legítimas.
@@ -110,3 +114,31 @@ print(f'\nQuartis:')
 print(f'  Q1 (25%): {filhos.quantile(0.25)}')
 print(f'  Q2 (50%): {filhos.quantile(0.50)}')
 print(f'  Q3 (75%): {filhos.quantile(0.75)}')
+
+
+#===========================================================================
+# SPRINT 5 - Agrupamentos
+#===========================================================================
+
+print('\n' + '=' * 55)
+print('\nSPRINT 5 - AGRUPAMENTOS')
+print('\n' + '=' * 55)
+
+# Agrupamento 1: Compras por gênero
+genero = df.groupby('CL_GENERO').agg(
+    total_compras=('PR_ID', 'count'),
+    clientes_unicos=('CL_ID', 'nunique')
+).round(2).reset_index()
+
+print('\nAgrupamento 1 - Compras por Gênero:')
+print(genero.to_string())
+
+
+# Agrupamento 2: Categorias mais Vendidas
+categoria = df.groupby('PR_CAT').agg(
+    total_compras=('PR_CAT', 'count'),
+).sort_values(by='total_compras', ascending=False).reset_index()
+
+print('\nAgrupamento 2 - Categorias mais Vendidas:')
+print(categoria.to_string())
+
